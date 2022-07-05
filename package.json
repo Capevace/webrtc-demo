@@ -19,7 +19,6 @@
 	},
 	"homepage": "https://github.com/capevace/webrtc-demo#readme",
 	"dependencies": {
-		"cuid": "^2.1.8",
 		"express": "^4.18.1",
 		"peer": "^0.6.1",
 		"socket.io": "^4.5.1"

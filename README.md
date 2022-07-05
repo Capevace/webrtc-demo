@@ -36,3 +36,10 @@ Damit die WebRTC APIs verfügbar sind, muss die Seite über HTTPS laufen. Selbst
 ![](resources/screenshot_1.png)
 
 ![](resources/screenshot_2.png)
+
+## Open-Source Lizensen
+
+-   [express](https://github.com/expressjs/express) (MIT)
+-   [Socket.io](https://socket.io) (MIT)
+-   [TailwindCSS](https://tailwindcss.com) (MIT)
+-   [PeerJS](https://peerjs.com) (MIT)
