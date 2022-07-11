@@ -3,7 +3,7 @@ import '/assets/peer.min.js';
 
 const socket = io();
 const localPeer = new Peer();
-const peers = new Map();
+const connectedPeers = new Map();
 const peerRoot = document.querySelector('#peers');
 const peerCounter = document.querySelector('#peer-counter');
 const joinButton = document.querySelector('#join');
@@ -12,8 +12,8 @@ let status = 'offline';
 let mediaStream = null;
 
 const updatePeerCounter = (num = null) => {
-	console.log('counter', num, peers.size);
-	peerCounter.textContent = num === null ? peers.size : num;
+	console.log('counter', num, connectedPeers.size);
+	peerCounter.textContent = num === null ? connectedPeers.size : num;
 };
 
 // "Beitreten"-Button
@@ -61,11 +61,11 @@ socket.on('disconnect', () => {
  * Das 'peers'-Event wird aufgerufen, wenn neue Nutzer die Webseite betreten oder verlassen.
  */
 socket.on('peers', async (data) => {
-	console.info('New Peers:', data.peers, '– Old Peers:', peers);
+	console.info('New Peers:', data.peers, '– Old Peers:', connectedPeers);
 
 	switch (status) {
 		case 'online':
-			for (const [id, peer] of peers.entries()) {
+			for (const [id, peer] of connectedPeers.entries()) {
 				if (!data.peers.includes(id)) {
 					console.info('Disconnecting', id);
 
@@ -81,7 +81,7 @@ socket.on('peers', async (data) => {
 					continue;
 				}
 
-				if (!peers.has(peerId)) {
+				if (!connectedPeers.has(peerId)) {
 					console.info('Calling', peerId);
 
 					// Connect to new peer
@@ -113,7 +113,9 @@ async function onNewCall(peerId, call) {
 			'col-span-1 relative rounded-lg overflow-hidden';
 
 		// Video-Element konfigurieren und den MediaStream anfügen
-		const video = peerElement.querySelector('video') ?? document.createElement('video');
+		const video =
+			peerElement.querySelector('video') ??
+			document.createElement('video');
 		video.srcObject = stream;
 		video.className = 'w-full';
 		video.onloadedmetadata = (e) => {
@@ -136,11 +138,11 @@ async function onNewCall(peerId, call) {
 			peerRoot.append(peerElement);
 		}
 
-		peers.set(peerId, { call, stream });
+		connectedPeers.set(peerId, { call, stream });
 	});
 
 	call.on('close', () => {
-		peers.delete(peerId);
+		connectedPeers.delete(peerId);
 	});
 }
 
@@ -148,11 +150,11 @@ async function onNewCall(peerId, call) {
  * Verbindung zum Peer beenden und UI-Elemente entfernen
  */
 async function disconnectPeer(peerId) {
-	if (!peers.has(peerId)) {
+	if (!connectedPeers.has(peerId)) {
 		return;
 	}
 
-	const peer = peers.get(peerId);
+	const peer = connectedPeers.get(peerId);
 
 	// Verbindung schließen
 	peer.call.close();
@@ -164,7 +166,7 @@ async function disconnectPeer(peerId) {
 	}
 
 	// ID von Liste der Peers entfernen
-	peers.delete(peerId);
+	connectedPeers.delete(peerId);
 }
 
 /**
@@ -204,4 +206,3 @@ async function getMediaStream() {
 		);
 	});
 }
-

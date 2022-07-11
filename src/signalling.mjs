@@ -34,9 +34,10 @@ const peersInRoom = new Map();
 function onConnection(io, socket) {
 	let peerId = null;
 
-	const emitPeers = () => io.emit('peers', {
-		peers: Array.from(peersInRoom.keys())
-	});
+	const emitPeers = () =>
+		io.emit('peers', {
+			peers: Array.from(peersInRoom.keys())
+		});
 
 	emitPeers();
 
@@ -45,7 +46,7 @@ function onConnection(io, socket) {
 	// wird bei Änderungen an alle verbundenen Nutzer gesendet.
 	socket.on('join', (data) => {
 		if (peerId !== null) {
-			peersInRoom.delete(data.id);
+			peersInRoom.delete(peerId);
 		}
 
 		peerId = data.id;
